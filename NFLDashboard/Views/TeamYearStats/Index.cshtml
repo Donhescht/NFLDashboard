@@ -1,0 +1,238 @@
+﻿@model IEnumerable<NFLDashboard.Controllers.TeamYearStatsController.AggregateTeamStats>
+
+@{
+    ViewBag.Title = "Index";
+}
+@using Newtonsoft.Json
+
+<!-- MAIN CONTENT -->
+<div id="content">
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa-fw fa fa-home"></i>
+            NFL Team
+            <span>
+                >Mertics
+            </span>
+        </h1>
+    </div>
+</div>
+
+<section id="widget-grid" class="">
+    <!-- row -->
+    <div class="row">
+        <article class="col-sm-12">
+            <!-- Widget ID (each widget will need unique ID)-->
+            <div class="jarviswidget" id="wid-id-3" data-widget-colorbutton="false" data-widget-fullscreenbutton="false" data-widget-editbutton="false" data-widget-sortable="false">
+                <!-- widget options:
+                    usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+                    data-widget-colorbutton="false"
+                    data-widget-editbutton="false"
+                    data-widget-togglebutton="false"
+                    data-widget-deletebutton="false"
+                    data-widget-fullscreenbutton="false"
+                    data-widget-custombutton="false"
+                    data-widget-collapsed="true"
+                    data-widget-sortable="false"
+
+                -->
+                <header>
+
+                    <h2>Team Wins, PostSeasons And Cost </h2>
+
+                </header>
+
+                <!-- widget div-->
+                <div>
+
+                    <!-- widget edit box -->
+                    <div class="jarviswidget-editbox">
+                        <!-- This area used as dropdown edit box -->
+                        <input class="form-control" type="text">
+                    </div>
+                    <!-- end widget edit box -->
+                    <!-- widget content -->
+                    <div class="widget-body">
+
+                        <!-- this is what the user will see -->
+                        <canvas id="BubbleArea"></canvas>
+
+                    </div>
+                    <!-- end widget content -->
+
+                </div>
+                <!-- end widget div -->
+
+            </div>
+        </article>
+
+    </div>
+    <!-- end row-->
+
+</section>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Team)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.StartYear)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EndYear)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Wins)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Losses)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Cost)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Team)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.StartYear)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.EndYear)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Wins)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Losses)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Cost)
+        </td>
+    </tr>
+}
+
+</table>
+
+@section pagespecific {
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            /* DO NOT REMOVE : GLOBAL FUNCTIONS!
+             *
+             * pageSetUp(); WILL CALL THE FOLLOWING FUNCTIONS
+             *
+             * // activate tooltips
+             * $("[rel=tooltip]").tooltip();
+             *
+             * // activate popovers
+             * $("[rel=popover]").popover();
+             *
+             * // activate popovers with hover states
+             * $("[rel=popover-hover]").popover({ trigger: "hover" });
+             *
+             * // activate inline charts
+             * runAllCharts();
+             *
+             * // setup widgets
+             * setup_widgets_desktop();
+             *
+             * // run form elements
+             * runAllForms();
+             *
+             ********************************
+             *
+             * pageSetUp() is needed whenever you load a page.
+             * It initializes and checks for all basic elements of the page
+             * and makes rendering easier.
+             *
+             */
+
+            pageSetUp();
+            debugger;
+            /*
+             * ALL PAGE RELATED SCRIPTS CAN GO BELOW HERE
+             * eg alert("my home function");
+             *
+             * var pagefunction = function() {
+             *   ...
+             * }
+             * loadScript("js/plugin/_PLUGIN_NAME_.js", pagefunction);
+             *
+             * TO LOAD A SCRIPT:
+             * var pagefunction = function (){
+             *  loadScript(".../plugin.js", run_after_loaded);
+             * }
+             *
+             * OR
+             *
+             * loadScript(".../plugin.js", run_after_loaded);
+             */
+
+            // reference: http://www.chartjs.org/docs/
+
+            // BAR CHART
+
+            var BubbleOptions = {
+                //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+                scaleBeginAtZero: true,
+                //Boolean - Whether grid lines are shown across the chart
+                scaleShowGridLines: true,
+                //String - Colour of the grid lines
+                scaleGridLineColor: "rgba(0,0,0,.05)",
+                //Number - Width of the grid lines
+                scaleGridLineWidth: 1,
+                //Boolean - Re-draw chart on page resize
+                responsive: true,
+                //String - A legend template
+                legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+            }
+
+            var aggegateStats = @Html.Raw(JsonConvert.SerializeObject(this.Model));
+            var dataForBubble = [];
+            var labelsForBubble = {};
+
+            for(var i=0; i < aggegateStats.length; i++)
+            {
+                var bubble = {};
+                bubble["x"] = aggegateStats[i].Wins + aggegateStats[i].Losses;
+                var cost =  ~~(aggegateStats[i].Cost / 1000000);
+                bubble["y"] = cost;
+                bubble["r"] = aggegateStats[i].Wins;
+                dataForBubble.push(bubble)
+
+                labelsForBubble[i] = aggegateStats[i].Team;
+            }
+
+           // var jBubbleData = JSON.stringify(dataForBubble);
+           
+
+            var BubbleData = {
+                labels: labelsForBubble, // ["Patriots", "Seahanks", "Broncos"],
+                datasets: [
+                   {
+                       data: dataForBubble,
+                       label: "My First dataset",
+                       fillColor: "rgba(220,220,220,0.5)",
+                       strokeColor: "rgba(220,220,220,0.8)",
+                       highlightFill: "rgba(220,220,220,0.75)",
+                       highlightStroke: "rgba(220,220,220,1)",
+                   }]
+            };
+
+            // render chart
+            var ctx = document.getElementById("BubbleArea").getContext("2d");
+            var myNewChart = new Chart(ctx, { type: "bubble", data: BubbleData, options: BubbleOptions });
+            
+
+            // END BAR CHART
+
+        });
+    </script>
+}

@@ -1,9 +1,12 @@
-﻿using System.Web;
+﻿#region Using
+
 using System.Web.Mvc;
 
-namespace NFLDashboard
+#endregion
+
+namespace SmartAdminMvc
 {
-    public class FilterConfig
+    public static class FilterConfig
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {

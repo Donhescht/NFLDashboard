@@ -243,3 +243,7 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/NFLDashboard/Areas/Landing/Content/color/default.css
+/NFLDashboard/Areas/Landing/Content/css
+/NFLDashboard/Areas/Landing/Content/font-awesome
+/NFLRANalysis/Salary.R

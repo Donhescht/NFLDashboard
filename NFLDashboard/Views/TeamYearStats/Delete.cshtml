@@ -1,0 +1,80 @@
+﻿@model NFLDashboard.Models.TeamYearStat
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>TeamYearStat</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.team_id)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.team_id)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.season_year)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.season_year)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.wins)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.wins)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.losses)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.losses)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.offense_cost)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.offense_cost)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.defense_cost)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.defense_cost)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.total_cost)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.total_cost)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

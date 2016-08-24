@@ -1,0 +1,74 @@
+﻿@model NFLDashboard.Models.TeamYearStat
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>TeamYearStat</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.team_id)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.team_id)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.season_year)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.season_year)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.wins)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.wins)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.losses)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.losses)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.offense_cost)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.offense_cost)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.defense_cost)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.defense_cost)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.total_cost)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.total_cost)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

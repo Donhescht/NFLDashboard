@@ -1,31 +1,177 @@
-﻿@{
-    ViewBag.Title = "Home Page";
+﻿<!-- MAIN CONTENT -->
+<div id="content">
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-4">
+        <h1 class="page-title txt-color-blueDark">
+            <i class="fa-fw fa fa-home"></i>
+            NFL Team
+            <span>
+                >Metrics
+            </span>
+        </h1>
+    </div>
+</div>
+<!-- widget grid -->
+<section id="widget-grid" class="">
+    <!-- row -->
+    <div class="row">
+        <article class="col-sm-12">
+            <!-- Widget ID (each widget will need unique ID)-->
+            <div class="jarviswidget" id="wid-id-2" data-widget-colorbutton="false" data-widget-fullscreenbutton="false" data-widget-editbutton="false" data-widget-sortable="false">
+                <!-- widget options:
+            usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
+
+            data-widget-colorbutton="false"
+            data-widget-editbutton="false"
+            data-widget-togglebutton="false"
+            data-widget-deletebutton="false"
+            data-widget-fullscreenbutton="false"
+            data-widget-custombutton="false"
+            data-widget-collapsed="true"
+            data-widget-sortable="false"
+
+        -->
+                <header>
+
+                    <h2>NFL Team Winning Efficiency </h2>
+
+                </header>
+
+                <!-- widget div-->
+                <div>
+
+                    <!-- widget edit box -->
+                    <div class="jarviswidget-editbox">
+                        <!-- This area used as dropdown edit box -->
+                        <input class="form-control" type="text">
+                    </div>
+                    <!-- end widget edit box -->
+                    <!-- widget content -->
+                    <div class="widget-body">
+
+                        <!-- this is what the user will see -->
+                        <canvas id="barChart" height="120"></canvas>
+
+                    </div>
+                    <!-- end widget content -->
+
+                </div>
+                <!-- end widget div -->
+
+            </div>
+        </article>
+
+    </div>
+    <!-- end row-->
+
+</section>
+<!-- end widget grid -->
+
+<!-- END MAIN CONTENT -->
+@section pagespecific {
+    <script type="text/javascript">
+
+    $(document).ready(function () {
+
+        /* DO NOT REMOVE : GLOBAL FUNCTIONS!
+         *
+         * pageSetUp(); WILL CALL THE FOLLOWING FUNCTIONS
+         *
+         * // activate tooltips
+         * $("[rel=tooltip]").tooltip();
+         *
+         * // activate popovers
+         * $("[rel=popover]").popover();
+         *
+         * // activate popovers with hover states
+         * $("[rel=popover-hover]").popover({ trigger: "hover" });
+         *
+         * // activate inline charts
+         * runAllCharts();
+         *
+         * // setup widgets
+         * setup_widgets_desktop();
+         *
+         * // run form elements
+         * runAllForms();
+         *
+         ********************************
+         *
+         * pageSetUp() is needed whenever you load a page.
+         * It initializes and checks for all basic elements of the page
+         * and makes rendering easier.
+         *
+         */
+
+        pageSetUp();
+
+        /*
+         * ALL PAGE RELATED SCRIPTS CAN GO BELOW HERE
+         * eg alert("my home function");
+         *
+         * var pagefunction = function() {
+         *   ...
+         * }
+         * loadScript("js/plugin/_PLUGIN_NAME_.js", pagefunction);
+         *
+         * TO LOAD A SCRIPT:
+         * var pagefunction = function (){
+         *  loadScript(".../plugin.js", run_after_loaded);
+         * }
+         *
+         * OR
+         *
+         * loadScript(".../plugin.js", run_after_loaded);
+         */
+
+        // reference: http://www.chartjs.org/docs/
+
+        // BAR CHART
+
+        var barOptions = {
+            //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+            scaleBeginAtZero: true,
+            //Boolean - Whether grid lines are shown across the chart
+            scaleShowGridLines: true,
+            //String - Colour of the grid lines
+            scaleGridLineColor: "rgba(0,0,0,.05)",
+            //Number - Width of the grid lines
+            scaleGridLineWidth: 1,
+            //Boolean - If there is a stroke on each bar
+            barShowStroke: true,
+            //Number - Pixel width of the bar stroke
+            barStrokeWidth: 1,
+            //Number - Spacing between each of the X value sets
+            barValueSpacing: 5,
+            //Number - Spacing between data sets within X values
+            barDatasetSpacing: 1,
+            //Boolean - Re-draw chart on page resize
+            responsive: true,
+            //String - A legend template
+            legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+        }
+
+        var barData = {
+            labels: ["Patriots", "Seahanks", "Broncos", "Bengals", "Chiefs", "Cardninals", "Steelers"],
+            datasets: [
+               {
+                   label: "My First dataset",
+                   fillColor: "rgba(220,220,220,0.5)",
+                   strokeColor: "rgba(220,220,220,0.8)",
+                   highlightFill: "rgba(220,220,220,0.75)",
+                   highlightStroke: "rgba(220,220,220,1)",
+                   data: [1.0, 0.94, 0.91, 0.82, 0.79, 0.60, 0.59]
+               },
+            ]
+        };
+
+        // render chart
+        var ctx = document.getElementById("barChart").getContext("2d");
+        var myNewChart = new Chart(ctx, { type: 'bar', data: barData, options: barOptions});
+           
+
+        // END BAR CHART
+
+    })
+
+    </script>
 }
-
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
-
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
-</div>
