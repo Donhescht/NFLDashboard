@@ -397,6 +397,7 @@
     <Content Include="Content\img\demo\site-2.jpg" />
     <Content Include="Content\img\demo\video.png" />
     <Content Include="Content\img\demo\widget-colorpicker.png" />
+    <Content Include="Content\img\don.jpg" />
     <Content Include="Content\img\dropzone\spritemap%402x.png" />
     <Content Include="Content\img\dropzone\spritemap.png" />
     <Content Include="Content\img\favicon\1favicon.ico" />
@@ -1553,6 +1554,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\img\realestate\thumbs\" />
+    <Folder Include="Scripts\Dashboards\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -1645,6 +1647,7 @@
     <Content Include="Views\TeamYearStats\Edit.cshtml" />
     <Content Include="Views\TeamYearStats\Index.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\TeamYearStats\Index - Copy.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -15,7 +15,7 @@ namespace SmartAdminMvc
             routes.LowercaseUrls = true;
             routes.MapRoute("Default", "{controller}/{action}/{id}", new
             {
-                controller = "Home",
+                controller = "TeamYearStats",
                 action = "Index",
                 id = UrlParameter.Optional
             }).RouteHandler = new DashRouteHandler();

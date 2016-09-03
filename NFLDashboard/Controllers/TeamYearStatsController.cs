@@ -11,6 +11,17 @@ namespace NFLDashboard.Controllers
     {
         private TeamYearStatsDBContext db = new TeamYearStatsDBContext();
 
+        public class StatTimeOptions
+        {
+            public StatTimeOptions(int aStartYear, int aEndYear)
+            {
+                StartAtThisYear = aStartYear;
+                EndAtThisYear = aEndYear;
+            }
+            public int StartAtThisYear { get; set; }
+            public int EndAtThisYear { get; set; }
+        }
+
         public class AggregateTeamStats 
         {
             public int StartYear { get; set; }
@@ -22,15 +33,16 @@ namespace NFLDashboard.Controllers
 
         }
 
+        private StatTimeOptions yearsForStatData = new StatTimeOptions(2010, 2015);
         // GET: TeamYearStats
-        public ActionResult Index()
+        public ActionResult Index(int startYear = 2010, int endYear = 2015)
         {
             AggregateTeamStats AgTeamStats = new AggregateTeamStats();
             List<TeamYearStat> aTeamYearStatList = db.teamYearStats.ToList();
 
             List<AggregateTeamStats> aList = (
                 from tystat in aTeamYearStatList
-                where (tystat.season_year >= 2010 && tystat.season_year <= 2015)
+                where (tystat.season_year >= startYear && tystat.season_year <= endYear)
                 group tystat by tystat.team_id into AgStats
                 orderby AgStats.Key
                 select new AggregateTeamStats
