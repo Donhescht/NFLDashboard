@@ -5,16 +5,19 @@
 }
 @using Newtonsoft.Json
 
+<!DOCTYPE html>
 <html>
 <head>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
 
-        //pageSetUp();
 
         google.charts.load('current', {'packages':['corechart']});
         google.charts.setOnLoadCallback(drawSeriesChart);
 
+        // Render the bubble chart on the dashboard.  This bubble chart
+        // shows the team effectiveness by comparing cost, cost per win 
+        // and total wins for the time period.
         function drawSeriesChart() {
 
             var aggegateStats = @Html.Raw(JsonConvert.SerializeObject(this.Model));
@@ -46,10 +49,156 @@
                 bubble: {textStyle: {fontSize: 11}},
                 colorAxis: {colors: [ 'green', 'red']}
             };
+           
+            // This locally scoped method is called when a user selects 
+            // a bubble. It causes the detailed graphs on the chosen team.
+            function selectHandler() {
+                var selectedItem = chart.getSelection()[0];
+                if (selectedItem) {
+                    var value = data.getValue(selectedItem.row, 0);
+                    updateDetailCharts(value);
+                }
+            }
 
             var chart = new google.visualization.BubbleChart(document.getElementById('NFLBubbleArea'));
+            google.visualization.events.addListener(chart, 'select', selectHandler);
             chart.draw(data, options);
+
+            // Just pick one to be selected.
+
+            chart.setSelection([{row:22, column:null}]);
+            var value = data.getValue(22, 0);
+
+            updateDetailCharts(value);
         }
+
+        // This function creates charts on the canvas
+        function updateDetailCharts(selectedTeam) {
+
+            /* DO NOT REMOVE : GLOBAL FUNCTIONS!
+             * pageSetUp() is needed whenever you load a page.
+             * It initializes and checks for all basic elements of the page
+             * and makes rendering easier.
+             *
+             */
+            pageSetUp();
+            debugger;
+
+            var aggegateStats = @Html.Raw(JsonConvert.SerializeObject(this.Model));
+            var chartWinData = [];
+            var chartCostData = [];
+            var chartLabel = [];
+            var Team = "";
+
+            for(var i=0; i < aggegateStats.length; i++)
+            {
+                if(aggegateStats[i].Team ==selectedTeam)
+                {
+                    Team = aggegateStats[i].Team;
+                    chartWinData = aggegateStats[i].WinsEachYear;
+                    chartCostData = aggegateStats[i].CostEachYear;
+                    chartLabel = aggegateStats[i].Years;
+                }
+            }
+
+            var tempCost;
+            var tempWin;
+            var tempYear;
+            // Now sort by year
+            for(var i=0; i < chartLabel.length; i++)
+            {
+                for(var k = 0; k < chartLabel.length-1; k++ )
+                {
+                    if(chartLabel[k] > chartLabel[k+1])
+                    {
+                        tempWin = chartWinData[k];
+                        tempCost = chartCostData[k];
+                        tempYear = chartLabel[k];
+                        chartWinData[k]= chartWinData[k+1];
+                        chartCostData[k] = chartCostData[k+1];
+                        chartLabel[k]= chartLabel[k+1];
+                        chartWinData[k+1] = tempWin;
+                        chartCostData[k+1] = tempCost;
+                        chartLabel[k+1]= tempYear;
+                    }
+                }
+            }
+
+            // See ChartJS documentation for how to set up charts.
+            var optionsWins = {
+                scaleBeginAtZero: true,
+                scaleShowGridLines: true,
+                scaleGridLineColor: "rgba(0,0,0,.05)",
+                scaleGridLineWidth: 1,
+                backgroundColor: "rgba(1,0,0,1)",
+                responsive: true,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            max: 18,
+                            min: 0,
+                            stepSize: 1
+                        }
+                    }]
+                },
+                //legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+            }
+
+            var dataWins = {
+                labels: chartLabel,
+                datasets: [
+                   {
+                       lineTension: 0,
+                       backgroundColor: "rgba(0,0,255,0.1)",
+                       borderColor: "rgba(0,0,255,0.1)",
+                       data: chartWinData,
+                       label: "Wins for: " + Team.toString(),
+                   }]
+            };
+
+            // render chart
+            var ctx = document.getElementById("teamWinsPerYear").getContext("2d");
+            var myNewChart = new Chart(ctx, {type: 'line', data: dataWins, options: optionsWins});
+
+
+            var optionsCost = {
+                scaleBeginAtZero: true,
+                lineTension: 0,
+                steppedLine: true,
+                scaleShowGridLines: true,
+                scaleGridLineColor: "rgba(0,0,0,.05)",
+                scaleGridLineWidth: 1,
+                backgroundColor: "rgba(1,0,0,1)",
+                responsive: true,
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            max: 200000000,
+                            min: 80000000,
+                            stepSize: 20000000
+                        }
+                    }]
+                },
+                legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+            }
+
+            var dataCost = {
+                labels: chartLabel,
+                datasets: [
+                   {
+                       lineTension: 0,
+                       backgroundColor: "rgba(255,0,0,0.1)",
+                       borderColor: "rgba(255,0,0,0.1)",
+                       data: chartCostData,
+                       label: "Costs for: " + Team.toString(),
+                   }]
+            };
+
+            // render chart
+            var ctx = document.getElementById("teamCostsPerYear").getContext("2d");
+            var myNewChart = new Chart(ctx, {type: 'line', data: dataCost, options: optionsCost});
+        }
+
     </script>
 </head>
 
@@ -103,207 +252,35 @@
                             </div>
                             <!-- end widget edit box -->
                             <!-- widget content -->
-                            <div class="widget-body" id="NFLBubbleArea" style="width: 1000px; height: 750px;"></div>
+                            <div class="widget-body" id="NFLBubbleArea" style="width: 1200px; height: 750px;"></div>
                         </div>
                     </div>
                 </article>
                 <article class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-
-                    <!-- Widget ID (each widget will need unique ID)-->
                     <div class="jarviswidget" id="wid-id-2" data-widget-colorbutton="false" data-widget-fullscreenbutton="false" data-widget-editbutton="false" data-widget-sortable="false">
-                        <!-- widget options:
-                    usage: <div class="jarviswidget" id="wid-id-0" data-widget-editbutton="false">
-
-                    data-widget-colorbutton="false"
-                    data-widget-editbutton="false"
-                    data-widget-togglebutton="false"
-                    data-widget-deletebutton="false"
-                    data-widget-fullscreenbutton="false"
-                    data-widget-custombutton="false"
-                    data-widget-collapsed="true"
-                    data-widget-sortable="false"
-
-                -->
                         <header>
-
-                            <h2>Team Wins Per Year</h2>
-
+                            <h2>Wins Per Year</h2>
                         </header>
-
-                        <!-- widget div-->
                         <div>
-
-                            <!-- widget edit box -->
-                            <div class="jarviswidget-editbox">
-                                <!-- This area used as dropdown edit box -->
-                                <input class="form-control" type="text">
-                            </div>
-                            <!-- end widget edit box -->
-                            <!-- widget content -->
                             <div class="widget-body">
-
-                                <!-- this is what the user will see -->
-                                <canvas id="teamWinsPerYear" height="120"></canvas>
-
+                                <canvas id="teamWinsPerYear" height="150"></canvas>
                             </div>
-                            <!-- end widget content -->
-
                         </div>
-                        <!-- end widget div -->
-
                     </div>
-                    <!-- end widget -->
+
+                    <div class="jarviswidget" id="wid-id-3" data-widget-colorbutton="false" data-widget-fullscreenbutton="false" data-widget-editbutton="false" data-widget-sortable="false">
+                        <header>
+                            <h2>AAV Cost Per Year</h2>
+                        </header>
+                        <div>
+                            <div class="widget-body">
+                                <canvas id="teamCostsPerYear" height="150"></canvas>
+                            </div>
+                        </div>
+                    </div>
   
                 </article>
             </div>     
    </section>
 </body>     
 </html>
-
-@section pagespecific {
-    <script type="text/javascript">
-
-    $(document).ready(function () {
-
-        /* DO NOT REMOVE : GLOBAL FUNCTIONS!
-         *
-         * pageSetUp(); WILL CALL THE FOLLOWING FUNCTIONS
-         *
-         * // activate tooltips
-         * $("[rel=tooltip]").tooltip();
-         *
-         * // activate popovers
-         * $("[rel=popover]").popover();
-         *
-         * // activate popovers with hover states
-         * $("[rel=popover-hover]").popover({ trigger: "hover" });
-         *
-         * // activate inline charts
-         * runAllCharts();
-         *
-         * // setup widgets
-         * setup_widgets_desktop();
-         *
-         * // run form elements
-         * runAllForms();
-         *
-         ********************************
-         *
-         * pageSetUp() is needed whenever you load a page.
-         * It initializes and checks for all basic elements of the page
-         * and makes rendering easier.
-         *
-         */
-
-        pageSetUp();
-
-
-        /*
-         * ALL PAGE RELATED SCRIPTS CAN GO BELOW HERE
-         * eg alert("my home function");
-         *
-         * var pagefunction = function() {
-         *   ...
-         * }
-         * loadScript("js/plugin/_PLUGIN_NAME_.js", pagefunction);
-         *
-         * TO LOAD A SCRIPT:
-         * var pagefunction = function (){
-         *  loadScript(".../plugin.js", run_after_loaded);
-         * }
-         *
-         * OR
-         *
-         * loadScript(".../plugin.js", run_after_loaded);
-         */
-
-        // reference: http://www.chartjs.org/docs/
-
-
-        // BAR CHART
-
-        var barOptions = {
-            //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
-            scaleBeginAtZero: true,
-            //Boolean - Whether grid lines are shown across the chart
-            scaleShowGridLines: true,
-            //String - Colour of the grid lines
-            scaleGridLineColor: "rgba(0,0,0,.05)",
-            //Number - Width of the grid lines
-            scaleGridLineWidth: 1,
-            //Boolean - If there is a stroke on each bar
-            barShowStroke: true,
-            //Number - Pixel width of the bar stroke
-            barStrokeWidth: 1,
-            //Number - Spacing between each of the X value sets
-            barValueSpacing: 5,
-            //Number - Spacing between data sets within X values
-            barDatasetSpacing: 1,
-            //Boolean - Re-draw chart on page resize
-            responsive: true,
-            //String - A legend template
-            legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
-        }
-
-        var aggegateStats = @Html.Raw(JsonConvert.SerializeObject(this.Model));
-        var dataForBubble = [];
-        var labelsForBubble = {};
-
-        for(var i=0; i < aggegateStats.length; i++)
-        {
-            var bubble = {};
-            bubble["x"] = aggegateStats[i].Wins + aggegateStats[i].Losses;
-            var cost =  ~~(aggegateStats[i].Cost / 1000000);
-            bubble["y"] = cost;
-            bubble["r"] = aggegateStats[i].Wins;
-            dataForBubble.push(bubble)
-
-            labelsForBubble[i] = aggegateStats[i].Team;
-        }
-
-        // var jBubbleData = JSON.stringify(dataForBubble);
-           
-
-        var barData = {
-            labels: labelsForBubble, // ["Patriots", "Seahanks", "Broncos"],
-            datasets: [
-               {
-                   data: dataForBubble,
-                   label: "Team Wins",
-                   fillColor: "rgba(220,220,220,0.5)",
-                   strokeColor: "rgba(220,220,220,0.8)",
-                   highlightFill: "rgba(220,220,220,0.75)",
-                   highlightStroke: "rgba(220,220,220,1)",
-               }]
-        };
-
-        var barData = {
-            labels: ["January", "February", "March", "April", "May", "June", "July"],
-            datasets: [
-               {
-                   label: "My First dataset",
-                   fillColor: "rgba(220,220,220,0.5)",
-                   strokeColor: "rgba(220,220,220,0.8)",
-                   highlightFill: "rgba(220,220,220,0.75)",
-                   highlightStroke: "rgba(220,220,220,1)",
-                   data: [65, 59, 80, 81, 56, 55, 40]
-               },
-               {
-                   label: "My Second dataset",
-                   fillColor: "rgba(151,187,205,0.5)",
-                   strokeColor: "rgba(151,187,205,0.8)",
-                   highlightFill: "rgba(151,187,205,0.75)",
-                   highlightStroke: "rgba(151,187,205,1)",
-                   data: [28, 48, 40, 19, 86, 27, 90]
-               }
-            ]
-        };
-
-        // render chart
-        var ctx = document.getElementById("teamWinsPerYear").getContext("2d");
-        var myNewChart = new Chart(ctx, {type: 'bar', data: barData, options: barOptions});
-        // END BAR CHART
-
-    })
-    </script>
-}

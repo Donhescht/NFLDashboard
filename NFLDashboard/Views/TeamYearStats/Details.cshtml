@@ -3,72 +3,160 @@
 @{
     ViewBag.Title = "Details";
 }
+@using Newtonsoft.Json
 
-<h2>Details</h2>
+<body>
 
-<div>
-    <h4>TeamYearStat</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.team_id)
-        </dt>
+    <section id="widget-grid" class="">
 
-        <dd>
-            @Html.DisplayFor(model => model.team_id)
-        </dd>
+    </section>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.season_year)
-        </dt>
+</body>
 
-        <dd>
-            @Html.DisplayFor(model => model.season_year)
-        </dd>
+@section pagespecific {
+    <script type="text/javascript">
 
-        <dt>
-            @Html.DisplayNameFor(model => model.wins)
-        </dt>
+    $(document).ready(function () {
 
-        <dd>
-            @Html.DisplayFor(model => model.wins)
-        </dd>
+        /* DO NOT REMOVE : GLOBAL FUNCTIONS!
+         *
+         * pageSetUp(); WILL CALL THE FOLLOWING FUNCTIONS
+         *
+         * // activate tooltips
+         * $("[rel=tooltip]").tooltip();
+         *
+         * // activate popovers
+         * $("[rel=popover]").popover();
+         *
+         * // activate popovers with hover states
+         * $("[rel=popover-hover]").popover({ trigger: "hover" });
+         *
+         * // activate inline charts
+         * runAllCharts();
+         *
+         * // setup widgets
+         * setup_widgets_desktop();
+         *
+         * // run form elements
+         * runAllForms();
+         *
+         ********************************
+         *
+         * pageSetUp() is needed whenever you load a page.
+         * It initializes and checks for all basic elements of the page
+         * and makes rendering easier.
+         *
+         */
 
-        <dt>
-            @Html.DisplayNameFor(model => model.losses)
-        </dt>
+        pageSetUp();
 
-        <dd>
-            @Html.DisplayFor(model => model.losses)
-        </dd>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.offense_cost)
-        </dt>
+        /*
+         * ALL PAGE RELATED SCRIPTS CAN GO BELOW HERE
+         * eg alert("my home function");
+         *
+         * var pagefunction = function() {
+         *   ...
+         * }
+         * loadScript("js/plugin/_PLUGIN_NAME_.js", pagefunction);
+         *
+         * TO LOAD A SCRIPT:
+         * var pagefunction = function (){
+         *  loadScript(".../plugin.js", run_after_loaded);
+         * }
+         *
+         * OR
+         *
+         * loadScript(".../plugin.js", run_after_loaded);
+         */
 
-        <dd>
-            @Html.DisplayFor(model => model.offense_cost)
-        </dd>
+        // reference: http://www.chartjs.org/docs/
 
-        <dt>
-            @Html.DisplayNameFor(model => model.defense_cost)
-        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.defense_cost)
-        </dd>
+        // BAR CHART
 
-        <dt>
-            @Html.DisplayNameFor(model => model.total_cost)
-        </dt>
+        var barOptions = {
+            //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+            scaleBeginAtZero: true,
+            //Boolean - Whether grid lines are shown across the chart
+            scaleShowGridLines: true,
+            //String - Colour of the grid lines
+            scaleGridLineColor: "rgba(0,0,0,.05)",
+            //Number - Width of the grid lines
+            scaleGridLineWidth: 1,
+            //Boolean - If there is a stroke on each bar
+            barShowStroke: true,
+            //Number - Pixel width of the bar stroke
+            barStrokeWidth: 1,
+            //Number - Spacing between each of the X value sets
+            barValueSpacing: 5,
+            //Number - Spacing between data sets within X values
+            barDatasetSpacing: 1,
+            //Boolean - Re-draw chart on page resize
+            responsive: true,
+            //String - A legend template
+            legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].lineColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+        }
 
-        <dd>
-            @Html.DisplayFor(model => model.total_cost)
-        </dd>
+        var aggegateStats = @Html.Raw(JsonConvert.SerializeObject(this.Model));
+        var dataForBubble = [];
+        var labelsForBubble = {};
 
-    </dl>
-</div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+        for(var i=0; i < aggegateStats.length; i++)
+        {
+            var bubble = {};
+            bubble["x"] = aggegateStats[i].Wins + aggegateStats[i].Losses;
+            var cost =  ~~(aggegateStats[i].Cost / 1000000);
+            bubble["y"] = cost;
+            bubble["r"] = aggegateStats[i].Wins;
+            dataForBubble.push(bubble)
+
+            labelsForBubble[i] = aggegateStats[i].Team;
+        }
+
+        // var jBubbleData = JSON.stringify(dataForBubble);
+
+
+        var barData = {
+            labels: labelsForBubble, // ["Patriots", "Seahanks", "Broncos"],
+            datasets: [
+               {
+                   data: dataForBubble,
+                   label: "Team Wins",
+                   fillColor: "rgba(220,220,220,0.5)",
+                   strokeColor: "rgba(220,220,220,0.8)",
+                   highlightFill: "rgba(220,220,220,0.75)",
+                   highlightStroke: "rgba(220,220,220,1)",
+               }]
+        };
+
+        var barData = {
+            labels: ["January", "February", "March", "April", "May", "June", "July"],
+            datasets: [
+               {
+                   label: "My First dataset",
+                   fillColor: "rgba(220,220,220,0.5)",
+                   strokeColor: "rgba(220,220,220,0.8)",
+                   highlightFill: "rgba(220,220,220,0.75)",
+                   highlightStroke: "rgba(220,220,220,1)",
+                   data: [65, 59, 80, 81, 56, 55, 40]
+               },
+               {
+                   label: "My Second dataset",
+                   fillColor: "rgba(151,187,205,0.5)",
+                   strokeColor: "rgba(151,187,205,0.8)",
+                   highlightFill: "rgba(151,187,205,0.75)",
+                   highlightStroke: "rgba(151,187,205,1)",
+                   data: [28, 48, 40, 19, 86, 27, 90]
+               }
+            ]
+        };
+
+        // render chart
+        var ctx = document.getElementById("teamWinsPerYear").getContext("2d");
+        var myNewChart = new Chart(ctx, {type: 'bar', data: barData, options: barOptions});
+        // END BAR CHART
+
+    })
+    </script>
+}

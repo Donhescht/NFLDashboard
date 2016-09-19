@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NFLDashboard.Tests", "NFLDa
 EndProject
 Project("{DA7A21FA-8162-4350-AD77-A8D1B671F3ED}") = "NFLRANalysis", "NFLRANalysis\NFLRANalysis.rxproj", "{B42A8FBB-125F-4220-A391-D8991C345F89}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "nfldb", "..\..\..\..\..\GitHub\nfldb\nfldb\nfldb.pyproj", "{D39C0DAD-898F-4C7D-8791-B7A3760C43D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,8 @@ Global
 		{B42A8FBB-125F-4220-A391-D8991C345F89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B42A8FBB-125F-4220-A391-D8991C345F89}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B42A8FBB-125F-4220-A391-D8991C345F89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D39C0DAD-898F-4C7D-8791-B7A3760C43D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D39C0DAD-898F-4C7D-8791-B7A3760C43D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
