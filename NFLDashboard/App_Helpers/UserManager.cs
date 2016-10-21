@@ -50,8 +50,8 @@ namespace SmartAdminMvc
                 SecurityStamp = "18272ba5-bf6a-48a7-8116-3ac34dbb7f38"
             };
 
-            UserStore.Context.Set<IdentityUser>().AddOrUpdate(demo);
-            UserStore.Context.SaveChanges();
+           // UserStore.Context.Set<IdentityUser>().AddOrUpdate(demo);
+            //UserStore.Context.SaveChanges();
         }
     }
 }
