@@ -15,14 +15,13 @@
         google.charts.load('current', {'packages':['corechart']});
         google.charts.setOnLoadCallback(drawSeriesChart);
 
-        // Render the bubble chart on the dashboard.  This bubble chart
-        // shows the team effectiveness by comparing cost, cost per win 
-        // and total wins for the time period.
-        function drawSeriesChart() {
+        var aggegateStats = @Html.Raw(JsonConvert.SerializeObject(this.Model));
+        var nflStats = [];
+        var labels = [];
 
-            var aggegateStats = @Html.Raw(JsonConvert.SerializeObject(this.Model));
-            var nflStats = [];
-            var labels = [];
+        initBubbleChartData();
+
+        function initBubbleChartData(){
             labels[0] = "Team";
             labels[1] = "Cost In Millions";
             labels[2] = "Wins";
@@ -40,6 +39,19 @@
                 
                 nflStats.push(aTeamStats)
             }
+        }
+
+        window.onresize = myResize;
+        
+        function myResize(){
+            drawSeriesChart();
+        };
+
+        // Render the bubble chart on the dashboard.  This bubble chart
+        // shows the team effectiveness by comparing cost, cost per win 
+        // and total wins for the time period.
+        function drawSeriesChart() {
+
             var data = google.visualization.arrayToDataTable(nflStats);
 
             var options = {
@@ -54,7 +66,7 @@
             // a bubble. It causes the detailed graphs on the chosen team.
             function selectHandler() {
                 var selectedItem = chart.getSelection()[0];
-                if (selectedItem) {
+                if (selectedItem.row != null) {
                     var value = data.getValue(selectedItem.row, 0);
                     updateDetailCharts(value);
                 }
@@ -64,12 +76,14 @@
             google.visualization.events.addListener(chart, 'select', selectHandler);
             chart.draw(data, options);
 
-            // Just pick one to be selected.
-
-            chart.setSelection([{row:22, column:null}]);
-            var value = data.getValue(22, 0);
+            var value = data.getValue(0, 0);
+            var selectedItem = chart.getSelection()[0];
+            if(selectedItem != null){
+                value = data.getValue(selectedItem.row, 0);
+            }
 
             updateDetailCharts(value);
+
         }
 
         // This function creates charts on the canvas
